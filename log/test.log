@@ -1,0 +1,23 @@
+2021-03-27 11:10:06.704669
+20210326
+Traceback (most recent call last):
+  File "/Users/younghun/opt/anaconda3/envs/venvforpython/lib/python3.7/site-packages/pymysql/connections.py", line 614, in connect
+    (self.host, self.port), self.connect_timeout, **kwargs
+  File "/Users/younghun/opt/anaconda3/envs/venvforpython/lib/python3.7/socket.py", line 728, in create_connection
+    raise err
+  File "/Users/younghun/opt/anaconda3/envs/venvforpython/lib/python3.7/socket.py", line 716, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 61] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/younghun/Desktop/gitrepo/Data_analysis/woochuri/main.py", line 14, in <module>
+    crawling_weather.crawl_weather()
+  File "/Users/younghun/Desktop/gitrepo/Data_analysis/woochuri/weather.py", line 89, in crawl_weather
+    charset='utf8')
+  File "/Users/younghun/opt/anaconda3/envs/venvforpython/lib/python3.7/site-packages/pymysql/connections.py", line 353, in __init__
+    self.connect()
+  File "/Users/younghun/opt/anaconda3/envs/venvforpython/lib/python3.7/site-packages/pymysql/connections.py", line 664, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on 'localhost' ([Errno 61] Connection refused)")
