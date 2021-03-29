@@ -8,7 +8,7 @@
 ## 📋 데이터 명세서
 - *우추리 축산 일 매출 데이터*
   * 영업 오픈일 2009-01-01 ~ 현재까지의 일 매출 데이터
-  * 수기로 직접 수집
+  * Excel 활용해 수기로 직접 수집
  
 - *지상(종관, ASOS) 일자료 조회 서비스*
   * 공공 데이터 [Open API](https://www.data.go.kr/tcs/dss/selectApiDataDetailView.do?publicDataPk=15059093)
@@ -50,10 +50,93 @@
     - EDA 결과, 명절 이벤트로 인해 명절 당일 직전날로부터 과거 6일간 매출이 평소와 다르게 매우 높은 것으로 관찰
     - [holidays](https://pypi.org/project/holidays/) 오픈소스를 이용해 대한민국의 명절 데이터를 미리 로드하고 해당 날짜로부터 6일 이내에 명절 당일 직전날이 존재하면 가중치를 1부터 6까지 차등적으로 부여
       - 위와 같은 로직을 사용해 실시간 날짜에 명절 연휴 가중치를 부여할 수 있음
-   
-   * 일반 공휴일
+  
+  * 일반 공휴일
     - 어린이날, 석가탄신일 등과 같이 일반 공휴일에도 평소와 다르게 높은 매출이 집계
     - 명절과 마찬가지로 동일한 로직 구현
 
 ## 🦾 예측 모델 성능 비교
-- 예측 
+- ``Train`` : 2009-01-01 ~ 2019-12-31
+- ``Validation`` : 2020-01-01 ~ 2020-12-31(1일씩 교차검증 수행)
+- ``Accuracy``: 오차(MAE)가 10만원 이하로 예측했으면 성공(1), 아니면 실패(0)로 계산하여 예측 정확도 성능 계산
+
+|Model|Train MAE|Test MAE|Test Accuracy|
+|---|---|---|---|
+|[Prophet](https://facebook.github.io/prophet/)|X|400,000|37%|
+|ARIMA|X|400,000|23%|
+|Linear Regression|280,000|280,000|31%|
+|Polynomial Linear Regression(2 degree)|230,000|250,000|36%|
+|PLS Regression|290,000|290,000|26%|
+|Random Forest|70,000|210,000|41%|
+|XGBoost|150,000|200,000|39%|
+|LightGBM|140,000|220,000|41%|
+|LightGBM(PCA)|180,000|270,000|35%|
+|Hybrid Voting|120,000|200,000|42%|
+|LSTM(with Convolution)|336,000|260,000|39%|
+
+💡 최종 모델 : **Random Forest Regressor**<br>
+💡 Optimal Hyper-parameter : ``n_estimators=100``, ``min_samples_split=2``<br>
+💡 앞으로 일일 데이터를 계속 수집 후 학습할 것이므로 Train MAE가 가장 낮은 Random Forest 선정
+
+## 📊 분석결과 보고서 작성
+- [Notion](https://www.notion.so/Younghun-Jo-b33f2fa37e214496936ab9319173471d)
+
+## 📟 자동화
+- 예측하기 전 전일 우추리 축산 매출과 휴무 여부를 ``today_sale`` 변수와 ``remark_str``에 입력
+- 예측하려는 날 오전 8시, 오전 11시에 2차례 ``main.py`` 수행
+- 유닉스 계열 Mac OS 시간 기반 잡 스케줄러 [cron](https://www.letmecompile.com/scheduler-cron-tutorial/) 이용
+```
+import pandas as pd
+from weather import CrawlWeather
+from beef_pork import CrawlPrices
+from Woochuri_sales import InsertSale
+from model import WoochuriPredModel
+from twilio.rest import Client
+
+print("Today:", pd.Timestamp.now())
+
+# Crawling today's weather dataset in Public data API and store it in local DB
+crawling_weather = CrawlWeather()
+crawling_weather.crawl_weather()
+
+# Crawling today's beef, pork price dataset in Public data API and store it in local DB
+crawling_prices = CrawlPrices()
+crawling_prices.crawl_beef()  # Beef price
+crawling_prices.crawl_pork()  # Pork price
+
+# Insert today's sales of Woochuri store and store it in local DB
+today_sale = 486800  # 금일 우추리 매출 입력하기!(->3월 26일 매출임!)
+remark_str = '평일'  # 금일 휴무 여부 입력하기!
+insert_sale = InsertSale()
+insert_sale.insert_sale(today_sale=today_sale, remark_str=remark_str)
+
+# Load updated crawling dataset and modeling to predict tomorrow's sale
+# Setting parameters using local MySQL id, password
+user, password = 'your id', 'your password'  
+end_time = (pd.Timestamp.now() - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
+
+PredModel = WoochuriPredModel(user=user, password=password, end_time=end_time)
+woochuri_df = PredModel.load_datasets()
+result = PredModel.fit_predict(woochuri_df)
+
+# Sending Meassage
+account_sid = 'AC8f9d9f4c8983ee648153f5347ee027a9'
+auth_token = 'a2d30a2542a2eff5108764a057c87200'
+client = Client(account_sid, auth_token)
+
+woochuri_master = '+821094125854'
+message = client.messages.create(from_='+13132543287', body=result, to=woochuri_master)
+print(message.sid)
+```
+
+## ⚙️ Stack
+<img width="639" alt="스크린샷 2021-03-29 오후 5 09 47" src="https://user-images.githubusercontent.com/54783194/112806291-95193380-90b1-11eb-9e6a-2b4934ea0080.png"><br>
+- Python 3.7.7
+- BeautifulSoup 4.6.0
+- MySQL 8.0.21(pymysql 1.0.2)
+- Pandas
+- Numpy
+- Scikit-learn 0.24.1
+- Tensorflow 2.x
+- PowerPoint
+- IDE: PyCharm, Jupyter notebook
