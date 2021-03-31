@@ -144,5 +144,5 @@ print(message.sid)
 
 ## 📌 [twiliow 사용법](https://pypi.org/project/twilio/)
 - 다음 명령어를 터미널에서 입력 후 다운로드
-```pip install twilio```
+<br>```pip install twilio```<br>
 - twilio 가입 후 twilio 웹 브라우저 console로 이동해 ``account_sid``와 ``auth_token`` 확인 후 ``main.py`` 파일과 동일한 코드로 메세지 전송
