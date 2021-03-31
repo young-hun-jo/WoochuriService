@@ -85,6 +85,7 @@
 - 예측하기 전 전일 우추리 축산 매출과 휴무 여부를 ``today_sale`` 변수와 ``remark_str``에 입력
 - 예측하려는 날 오전 8시, 오전 11시에 2차례 ``main.py`` 수행
 - 유닉스 계열 Mac OS 시간 기반 잡 스케줄러 [cron](https://www.letmecompile.com/scheduler-cron-tutorial/) 이용
+- 예측값을 SMS로 전달하기 위해 소정의 유료 SMS 발송 플랫폼 [twiliow](https://www.twilio.com/) 활용
 ```
 import pandas as pd
 from weather import CrawlWeather
@@ -120,12 +121,12 @@ woochuri_df = PredModel.load_datasets()
 result = PredModel.fit_predict(woochuri_df)
 
 # Sending Meassage
-account_sid = 'AC8f9d9f4c8983ee648153f5347ee027a9'
-auth_token = 'a2d30a2542a2eff5108764a057c87200'
+account_sid = 'your twiliow account sid'
+auth_token = 'your twiliow auth_token'
 client = Client(account_sid, auth_token)
 
-woochuri_master = '+821094125854'
-message = client.messages.create(from_='+13132543287', body=result, to=woochuri_master)
+woochuri_master = 'Phone number of receiver'
+message = client.messages.create(from_='Phone number of sender', body=result, to=woochuri_master)
 print(message.sid)
 ```
 
@@ -140,3 +141,8 @@ print(message.sid)
 - Tensorflow 2.x
 - PowerPoint
 - IDE: PyCharm, Jupyter notebook
+
+## 📌 [twiliow 사용법](https://pypi.org/project/twilio/)
+- 다음 명령어를 터미널에서 입력 후 다운로드
+```pip install twilio```
+- twilio 가입 후 twilio 웹 브라우저 console로 이동해 ``account_sid``와 ``auth_token`` 확인 후 ``main.py`` 파일과 동일한 코드로 메세지 전송
