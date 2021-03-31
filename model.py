@@ -64,7 +64,7 @@ class WoochuriPredModel:
         # Merge beef and pork dataset
         beef_pork_df = merge_beef_df.merge(merge_pork_df, how='inner', on='날짜')
 
-        # Remove outlier (한우가격 < 육우가격인 데이터)
+        # Remove outlier (한우가격 < 육우가격)
         cond0 = beef_pork_df['한우가격'] < beef_pork_df['육우가격']
         cond1 = beef_pork_df['육우가격'] > 18000
         beef_pork_df.loc[(cond0 | cond1), '육우가격'] = beef_pork_df.loc[(cond0 | cond1)]['한우가격'] * (10 / 18)
@@ -128,8 +128,8 @@ class WoochuriPredModel:
         weather = weather.drop('지역', axis=1)
 
         # Preprocess Woochuri sales dataset
-        db = pymysql.connect(host='localhost', user='younghun',
-                             password='watson1259', db='sales_db',
+        db = pymysql.connect(host='localhost', user=self._user,
+                             password=self._password, db='sales_db',
                              charset='utf8')
         cursor = db.cursor()
 
@@ -214,11 +214,18 @@ class WoochuriPredModel:
 
         dataset = dataset.apply(replace_zero_sales, axis=1)
 
-        total = dataset.groupby('요일')['일매출'].mean().values.sum()
+        # Give weights to weekday
         weekdays = dataset.groupby('요일')['일매출'].mean().index
-        values = np.round(dataset.groupby('요일')['일매출'].mean().values / total * 100, 2)
+        values = dataset.groupby('요일')['일매출'].mean().values
         weekdays_dict = dict(zip(weekdays, values))
         dataset['요일'] = dataset['요일'].map(weekdays_dict)
+
+        # Give weights to day(1day~31day)
+        dataset['일'] = dataset['날짜'].dt.day
+        daily = dataset.groupby('일')['일매출'].mean().index
+        values = dataset.groupby('일')['일매출'].mean().values
+        daily_dict = dict(zip(daily, values))
+        dataset['일'] = dataset['일'].map(daily_dict)
 
         # remove multi-Colinearity
         multi_cols = ['최소상대습도', '최저기온', '평균기온', '1시간최다일사량']
@@ -240,8 +247,8 @@ class WoochuriPredModel:
 
         # Apply MinMaxScaler partly
         scaler = MinMaxScaler()
-        no_scale_cols = ['요일', '설_추석_가중치', '일반공휴일가중치']
-        scale_cols = ['일매출', '한우가격', '육우가격', '돼지탕박가격', '평균상대습도', '최고기온', '평균풍속', '최대풍속',
+        no_scale_cols = ['설_추석_가중치', '일반공휴일가중치']
+        scale_cols = ['일매출', '요일', '일', '한우가격', '육우가격', '돼지탕박가격', '평균상대습도', '최고기온', '평균풍속', '최대풍속',
                       '일사량', '일강수량']
 
         X_train_scale = X_train[scale_cols]
