@@ -79,7 +79,7 @@
 💡 앞으로 일일 데이터를 계속 수집 후 학습할 것이므로 Train MAE가 가장 낮은 Random Forest 선정
 
 ## 📊 분석결과 보고서 작성
-- [Notion](https://www.notion.so/Younghun-Jo-b33f2fa37e214496936ab9319173471d)
+- [Notion](https://www.notion.so/4f3cf41bc515438095b3a79be8bc5f9d)
 
 ## 📟 자동화
 - 예측하기 전 전일 우추리 축산 매출과 휴무 여부를 ``today_sale`` 변수와 ``remark_str``에 입력
