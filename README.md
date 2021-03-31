@@ -71,7 +71,7 @@
 |XGBoost|150,000|200,000|39%|
 |LightGBM|140,000|220,000|41%|
 |LightGBM(PCA)|180,000|270,000|35%|
-|Hybrid Voting|120,000|200,000|42%|
+|Hybrid Voting(Random Forest+XGBoost+LightGBM)|120,000|200,000|42%|
 |LSTM(with Convolution)|336,000|260,000|39%|
 
 💡 최종 모델 : **Random Forest Regressor**<br>
