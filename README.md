@@ -67,7 +67,7 @@
 |Linear Regression|280,000|280,000|31%|
 |Polynomial Linear Regression(2 degree)|230,000|250,000|36%|
 |PLS Regression|290,000|290,000|26%|
-|Random Forest|70,000|210,000|41%|
+|Random Forest|70,000|190,000|41%|
 |XGBoost|150,000|200,000|39%|
 |LightGBM|140,000|220,000|41%|
 |LightGBM(PCA)|180,000|270,000|35%|
