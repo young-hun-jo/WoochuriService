@@ -23,9 +23,9 @@ class WoochuriPredModel:
                              charset='utf8')
         cursor = db.cursor()
         # SQL from local MySQL DB
-        beef_sql = "SELECT * FROM beef_prices WHERE 날짜 < '2011-03-03' AND 지역 = '전국'\
+        beef_sql = "SELECT DISTINCT * FROM beef_prices WHERE 날짜 < '2011-03-03' AND 지역 = '전국'\
                     UNION\
-                    SELECT * FROM beef_prices WHERE 날짜 >= '2011-03-03' AND 지역 = '중부권'\
+                    SELECT DISTINCT * FROM beef_prices WHERE 날짜 >= '2011-03-03' AND 지역 = '중부권'\
                     ORDER BY 날짜"
         pork_sql = "SELECT DISTINCT * FROM pork_prices ORDER BY 날짜"
 
@@ -194,8 +194,11 @@ class WoochuriPredModel:
 
         # Check all shape of datasets(Only Woochuri Sales shape must have more five rows)
         print('Weather:', weather.shape)
+        print(weather.tail())
         print('Woochuri Sales:', holidays_data.shape)
+        print(holidays_data.tail())
         print('Beef & Pork:', beef_pork_df.shape)
+        print(beef_pork_df.tail())
 
         beef_pork_weather = beef_pork_df.merge(weather, how='inner', on='날짜')
         dataset = holidays_data.merge(beef_pork_weather, how='left', on='날짜')
