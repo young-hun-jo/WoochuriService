@@ -19,7 +19,7 @@ crawling_prices.crawl_beef()  # Beef price
 crawling_prices.crawl_pork()  # Pork price
 
 # Insert today's sales of Woochuri store and store it in local DB
-today_sale = 310000  # 3월 31일 매출 입력(for 4월 1일 예측)
+today_sale = 550600  # 4월 1일 매출 입력(for 4월 2일 예측)
 remark_str = '평일'  # 금일 휴무 여부 입력하기!
 insert_sale = InsertSale()
 insert_sale.insert_sale(today_sale=today_sale, remark_str=remark_str)
@@ -35,7 +35,7 @@ result = PredModel.fit_predict(woochuri_df)
 
 # Sending Meassage
 account_sid = 'AC8f9d9f4c8983ee648153f5347ee027a9'
-auth_token = 'ebb5b8ba453a37fc3f3a41619ae7c235'
+auth_token = 'a76a3fca8128d8d2a4606da189265235'
 client = Client(account_sid, auth_token)
 
 woochuri_master = '+821094125854'
