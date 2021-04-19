@@ -78,7 +78,7 @@
 💡 Optimal Hyper-parameter : ``n_estimators=100``, ``min_samples_split=2``<br>
 💡 앞으로 일일 데이터를 계속 수집 후 학습할 것이므로 Train MAE가 가장 낮은 Random Forest 선정<br><br>
 🧷 최종 모델 예측 그래프
-![image](https://user-images.githubusercontent.com/54783194/113143278-ec143980-9266-11eb-8144-76d24b5a2933.png)
+<img width="745" alt="eval_res" src="https://user-images.githubusercontent.com/54783194/115231708-d3ee5680-a150-11eb-852c-f6f54aec7903.png">
 
 ## 📊 분석결과 보고서 작성
 - [Notion](https://www.notion.so/4f3cf41bc515438095b3a79be8bc5f9d)
