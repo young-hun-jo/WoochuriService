@@ -108,8 +108,8 @@ crawling_prices.crawl_beef()  # Beef price
 crawling_prices.crawl_pork()  # Pork price
 
 # Insert today's sales of Woochuri store and store it in local DB
-today_sale = 486800  # 금일 우추리 매출 입력하기!(->3월 26일 매출임!)
-remark_str = '평일'  # 금일 휴무 여부 입력하기!
+today_sale = 486800  # 금일 우추리 매출 입력
+remark_str = '평일'  # 금일 휴무 여부 입력
 insert_sale = InsertSale()
 insert_sale.insert_sale(today_sale=today_sale, remark_str=remark_str)
 
