@@ -7,26 +7,34 @@ from sklearn.impute import KNNImputer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import RandomForestRegressor
 import warnings
+
 warnings.filterwarnings(action='ignore')
 
+
 class WoochuriPredModel:
+    '''
+    Class including that crawl, preprocess data, modeling and finally prediction
+    '''
 
     def __init__(self, user, password, end_time):
         self._user = user
         self._password = password
-        self._end_time = end_time # set time that will be predicted
+        self._end_time = end_time  # time that will be predicted
 
-    def load_datasets(self):
-        # load beef and pork dataset
+    def load_beef_pork(self):
+        """
+        Function: load beef and pork dataset. And preprocess it.
+        """
+        # connect local MySQL
         db = pymysql.connect(host='localhost', user=self._user,
                              password=self._password, db='beef_pork_db',
                              charset='utf8')
         cursor = db.cursor()
-        # SQL from local MySQL DB
+        # Select datasets using SQL
         beef_sql = "SELECT DISTINCT * FROM beef_prices WHERE 날짜 < '2011-03-03' AND 지역 = '전국'\
-                    UNION\
-                    SELECT DISTINCT * FROM beef_prices WHERE 날짜 >= '2011-03-03' AND 지역 = '중부권'\
-                    ORDER BY 날짜"
+                            UNION\
+                            SELECT DISTINCT * FROM beef_prices WHERE 날짜 >= '2011-03-03' AND 지역 = '중부권'\
+                            ORDER BY 날짜"
         pork_sql = "SELECT DISTINCT * FROM pork_prices ORDER BY 날짜"
 
         beef_df = pd.read_sql(beef_sql, db)
@@ -72,26 +80,32 @@ class WoochuriPredModel:
         cond2 = beef_pork_df['한우가격'] < 1e4
         beef_pork_df.loc[cond2, '한우가격'] = beef_pork_df.loc[cond2]['육우가격'] * (18 / 10)
 
+        return beef_pork_df
+
+    def load_weather(self):
+        """
+        Function: load weather dataset and preprocess it
+        """
         # load weather dataset
         db = pymysql.connect(host='localhost', user=self._user,
                              password=self._password, db='weather_db',
                              charset='utf8')
         cursor = db.cursor()
-
+        # Select datasets using SQL
         weather_sql = "SELECT DISTINCT 지역, 시간,\
-                              NULLIF(평균기온, '') AS 평균기온,\
-                              NULLIF(최저기온, '') AS 최저기온,\
-                              NULLIF(최고기온, '') AS 최고기온,\
-                              NULLIF(1시간최다강수량, '') AS 1시간최다강수량,\
-                              NULLIF(일강수량, '') AS 일강수량,\
-                              NULLIF(평균풍속, '') AS 평균풍속,\
-                              NULLIF(최대풍속, '') AS 최대풍속,\
-                              NULLIF(평균상대습도, '') AS 평균상대습도,\
-                              NULLIF(최소상대습도, '') AS 최소상대습도,\
-                              NULLIF(1시간최다일사량, '') AS 1시간최다일사량,\
-                              NULLIF(일사량, '') AS 일사량\
-                              FROM weather\
-                              ORDER BY 시간"
+                                      NULLIF(평균기온, '') AS 평균기온,\
+                                      NULLIF(최저기온, '') AS 최저기온,\
+                                      NULLIF(최고기온, '') AS 최고기온,\
+                                      NULLIF(1시간최다강수량, '') AS 1시간최다강수량,\
+                                      NULLIF(일강수량, '') AS 일강수량,\
+                                      NULLIF(평균풍속, '') AS 평균풍속,\
+                                      NULLIF(최대풍속, '') AS 최대풍속,\
+                                      NULLIF(평균상대습도, '') AS 평균상대습도,\
+                                      NULLIF(최소상대습도, '') AS 최소상대습도,\
+                                      NULLIF(1시간최다일사량, '') AS 1시간최다일사량,\
+                                      NULLIF(일사량, '') AS 일사량\
+                                      FROM weather\
+                                      ORDER BY 시간"
         weather = pd.read_sql(weather_sql, db)
         weather = weather.rename(columns={'시간': '날짜'})
 
@@ -127,7 +141,12 @@ class WoochuriPredModel:
         weather = dataset.copy()
         weather = weather.drop('지역', axis=1)
 
-        # Preprocess Woochuri sales dataset
+        return weather
+
+    def load_woochuri(self):
+        """
+        Function: load Woochuri daily sales and preprocess it
+        """
         db = pymysql.connect(host='localhost', user=self._user,
                              password=self._password, db='sales_db',
                              charset='utf8')
@@ -164,7 +183,8 @@ class WoochuriPredModel:
         holidays_data = holidays_data[hol_cols]
 
         lunar_chuseok = ["The day preceding of Lunar New Year's Day", "The day preceding of Chuseok"]
-        lunar_chuseok_dates = holidays_data[holidays_data['공휴일명'].isin(lunar_chuseok)]['날짜'].dt.strftime('%Y-%m-%d').values
+        lunar_chuseok_dates = holidays_data[holidays_data['공휴일명'].isin(lunar_chuseok)]['날짜'].dt.strftime(
+            '%Y-%m-%d').values
         lunar_chuseok_around_dates = []
         for date in lunar_chuseok_dates:
             around = pd.date_range(end=date, freq='D', periods=6)
@@ -187,22 +207,37 @@ class WoochuriPredModel:
             return df
 
         holidays_data = holidays_data.apply(holidays_weights, axis=1)
-        holidays_data.loc[(~holidays_data['공휴일명'].str.contains('Lunar|Chuseok', na=False)) & (holidays_data['공휴일명'].notnull()), '일반공휴일가중치'] = 1
+        holidays_data.loc[(~holidays_data['공휴일명'].str.contains('Lunar|Chuseok', na=False)) & (
+            holidays_data['공휴일명'].notnull()), '일반공휴일가중치'] = 1
 
         need_cols = ['날짜', '요일', '일매출', '설_추석_가중치', '일반공휴일가중치']
         holidays_data = holidays_data[need_cols]
 
-        # Check all shape of datasets(Only Woochuri Sales shape must have more five rows)
+        return holidays_data
+
+    def merge_datasets(self, beef_pork, weather, sales):
+        """
+        Function: Merge all datasets
+        Args:
+            - beef_pork: 예측하려는 날 이전 데이터까지 존재
+            - weather: 예측하려는 날 이전 데이터까지 존재
+            - sales: 예측하려는 날로부터 미래 5일까지의 데이터가 존재
+        """
+        # Check each shape of dataframes
+        print('Beef & Pork:', beef_pork.shape)
+        print(beef_pork.tail())
+        print('-'*50)
         print('Weather:', weather.shape)
         print(weather.tail())
-        print('Woochuri Sales:', holidays_data.shape)
-        print(holidays_data.tail())
-        print('Beef & Pork:', beef_pork_df.shape)
-        print(beef_pork_df.tail())
+        print('-' * 50)
+        print('Woochuri Sales:', sales.shape)
+        print(sales.tail())
+        print('-' * 50)
 
-        beef_pork_weather = beef_pork_df.merge(weather, how='inner', on='날짜')
-        dataset = holidays_data.merge(beef_pork_weather, how='left', on='날짜')
-        dataset = dataset.iloc[:-5] # remove more five rows
+        # Merge all datasets
+        beef_pork_weather = beef_pork.merge(weather, how='inner', on='날짜')
+        dataset = sales.merge(beef_pork_weather, how='left', on='날짜')
+        dataset = dataset.iloc[:-5]  # remove more five rows
         print("Final dataset:", dataset.shape)
 
         # Preprocess zero-sales
@@ -237,8 +272,21 @@ class WoochuriPredModel:
 
         return final_dataset
 
+    def execute(self):
+        """
+        Function: After loading, preprocessing each dataset, merge all datasets into final dataset
+        """
+        BeefPork = self.load_beef_pork()
+        Weather = self.load_weather()
+        Sales = self.load_woochuri()
+        FinalDataset = self.merge_datasets(BeefPork, Weather, Sales)
 
-    def fit_predict(self, final_dataset):
+        return FinalDataset
+
+    def run(self, final_dataset):
+        """
+        Function: modeling and predict tomorrow sales of 'Woochuri Store'
+        """
         # Make target variable
         final_dataset['target'] = np.append(np.array(final_dataset['일매출'][1:]), 0)
 
@@ -291,6 +339,7 @@ class WoochuriPredModel:
         print(result)
 
         return result
+
 
 
 
