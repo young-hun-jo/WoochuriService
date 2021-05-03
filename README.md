@@ -61,7 +61,7 @@
 - ``Accuracy``: 오차(MAE)가 10만원 이하로 예측했으면 성공(1), 아니면 실패(0)로 계산하여 예측 정확도 성능 계산
 
 |Model|Train MAPE|Test MAPE|
-|---|---|---|---|
+|---|---|---|
 |[Prophet](https://facebook.github.io/prophet/)|X|400,000|
 |ARIMA|X|400,000|
 |Linear Regression|280,000|280,000|
