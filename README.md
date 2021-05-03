@@ -60,19 +60,19 @@
 - ``Validation`` : 2020-01-01 ~ 2020-12-31(1일씩 교차검증 수행)
 - ``Accuracy``: 오차(MAE)가 10만원 이하로 예측했으면 성공(1), 아니면 실패(0)로 계산하여 예측 정확도 성능 계산
 
-|Model|Train MAE|Test MAE|Test Accuracy|
+|Model|Train MAPE|Test MAPE|
 |---|---|---|---|
-|[Prophet](https://facebook.github.io/prophet/)|X|400,000|37%|
-|ARIMA|X|400,000|23%|
-|Linear Regression|280,000|280,000|31%|
-|Polynomial Linear Regression(2 degree)|230,000|250,000|36%|
-|PLS Regression|290,000|290,000|26%|
-|Random Forest|70,000|190,000|41%|
-|XGBoost|150,000|200,000|39%|
-|LightGBM|140,000|220,000|41%|
-|LightGBM(PCA)|180,000|270,000|35%|
-|Hybrid Voting(Random Forest+XGBoost+LightGBM)|120,000|200,000|42%|
-|LSTM(with Convolution)|336,000|260,000|39%|
+|[Prophet](https://facebook.github.io/prophet/)|X|400,000|
+|ARIMA|X|400,000|
+|Linear Regression|280,000|280,000|
+|Polynomial Linear Regression(2 degree)|230,000|250,000|
+|PLS Regression|290,000|290,000|
+|Random Forest|70,000|190,000|
+|XGBoost|150,000|200,000|
+|LightGBM|140,000|220,000|
+|LightGBM(PCA로 차원축소 )|180,000|270,000|
+|Hybrid Voting(Random Forest+XGBoost+LightGBM)|120,000|200,000|
+|LSTM(with Convolution)|336,000|260,000|
 
 💡 최종 모델 : **Random Forest Regressor**<br>
 💡 Optimal Hyper-parameter : ``n_estimators=100``, ``min_samples_split=2``<br>
