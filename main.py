@@ -34,10 +34,10 @@ FinalDataset = PredModel.execute()
 result = PredModel.run(FinalDataset)
 
 # # Sending Meassage
-# account_sid = 'AC8f9d9f4c8983ee648153f5347ee027a9'
-# auth_token = 'your_auth_token' # your_auth_token 따로 적어놓기
-# client = Client(account_sid, auth_token)
-#
-# woochuri_master = '+821094125854'
-# message = client.messages.create(from_='+13132543287', body=result, to=woochuri_master)
-# print(message.sid)
+account_sid = 'AC8f9d9f4c8983ee648153f5347ee027a9'
+auth_token = 'your_auth_token' # your_auth_token 따로 적어놓기
+client = Client(account_sid, auth_token)
+
+woochuri_master = '+821094125854'
+message = client.messages.create(from_='+13132543287', body=result, to=woochuri_master)
+print(message.sid)
