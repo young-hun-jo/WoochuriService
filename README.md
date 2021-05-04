@@ -64,14 +64,14 @@
 |---|---|---|
 |[Prophet](https://facebook.github.io/prophet/)|51.80%|41.75%|
 |ARIMA|63.25%|67.43%|
-|Linear Regression|280,000|280,000|
-|Polynomial Linear Regression(2 degree)|230,000|250,000|
-|PLS Regression|290,000|290,000|
-|Random Forest|70,000|190,000|
-|XGBoost|150,000|200,000|
-|LightGBM|140,000|220,000|
-|LightGBM(PCA로 차원축소 )|180,000|270,000|
-|Hybrid Voting(Random Forest+XGBoost+LightGBM)|120,000|200,000|
+|Linear Regression|43.51%|52.20%|
+|Polynomial Linear Regression(2 degree)|41.02%|49.41%|
+|PLS Regression|44.68%|62.21%|
+|Random Forest|11.10%|34.32%|
+|XGBoost|28.41%|33.51%|
+|LightGBM|22.19%|34.22%|
+|LightGBM(PCA로 차원축소 )|25.50%|37.70%|
+|Hybrid Voting(Random Forest+XGBoost+LightGBM)|20.20%|33.35%|
 |LSTM(with Convolution)|336,000|260,000|
 
 💡 최종 모델 : **Random Forest Regressor**<br>
