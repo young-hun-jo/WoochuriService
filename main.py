@@ -2,9 +2,9 @@
  무조건 예측날 아침에 돌려야 함!!
 '''
 import pandas as pd
-from weather import CrawlWeather
-from beef_pork import CrawlPrices
-from Woochuri_sales import InsertSale
+from datasets.weather import CrawlWeather
+from datasets.beef_pork import CrawlPrices
+from datasets.Woochuri_sales import InsertSale
 from model import WoochuriPredModel
 from twilio.rest import Client
 
@@ -19,7 +19,7 @@ crawling_prices.crawl_beef()  # Beef price
 crawling_prices.crawl_pork()  # Pork price
 
 # Insert today's sales of Woochuri store and store it in local DB
-today_sale = 435700  # 금일 매출 입력하기
+today_sale = 645600  # 금일 매출 입력하기
 remark_str = '평일'  # 금일 휴무 여부 입력하기!
 insert_sale = InsertSale()
 insert_sale.insert_sale(today_sale=today_sale, remark_str=remark_str)
