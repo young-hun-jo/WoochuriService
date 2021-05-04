@@ -62,8 +62,8 @@
 
 |Model|Train MAPE|Test MAPE|
 |---|---|---|
-|[Prophet](https://facebook.github.io/prophet/)|X|400,000|
-|ARIMA|X|400,000|
+|[Prophet](https://facebook.github.io/prophet/)|51.80%|41.75%|
+|ARIMA|63.25%|67.43%|
 |Linear Regression|280,000|280,000|
 |Polynomial Linear Regression(2 degree)|230,000|250,000|
 |PLS Regression|290,000|290,000|
