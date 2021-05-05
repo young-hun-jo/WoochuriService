@@ -67,7 +67,7 @@
 |Linear Regression|43.51%|52.20%|
 |Polynomial Linear Regression(2 degree)|41.02%|49.41%|
 |PLS Regression|44.68%|62.21%|
-|Random Forest|11.10%|34.32%|
+|<b>Random Forest</b>|<b>11.10%</b>|<b>34.32%</b>|
 |XGBoost|28.41%|33.51%|
 |LightGBM|22.19%|34.22%|
 |LightGBM(PCA로 차원축소 )|25.50%|37.70%|
