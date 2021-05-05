@@ -56,9 +56,9 @@
     - 명절과 마찬가지로 동일한 로직 구현
 
 ## 🦾 예측 모델 성능 비교
-- ``Train`` : 2009-01-01 ~ 2019-12-31
-- ``Validation`` : 2020-01-01 ~ 2020-12-31(1일씩 교차검증 수행)
-- ``Accuracy``: 오차(MAE)가 10만원 이하로 예측했으면 성공(1), 아니면 실패(0)로 계산하여 예측 정확도 성능 계산
+- ``Train`` : 2009-01-01 ~ 2020-05-03
+- ``Validation`` : 2020-05-04 ~ 2021-05-04(1일씩 교차검증 수행)
+- ``MAPE``: 예측값이 실제값과의 차이가 얼마나 차이나는지에 대한 비율
 
 |Model|Train MAPE|Test MAPE|
 |---|---|---|
@@ -77,8 +77,8 @@
 💡 최종 모델 : **Random Forest Regressor**<br>
 💡 Optimal Hyper-parameter : ``n_estimators=100``, ``min_samples_split=2``<br>
 💡 앞으로 일일 데이터를 계속 수집 후 학습할 것이므로 Train MAE가 가장 낮은 Random Forest 선정<br><br>
-🧷 최종 모델 예측 그래프(**2009-01-01 ~ 2021-04-18**)<br>
-<img width="745" alt="eval_res" src="https://user-images.githubusercontent.com/54783194/115231708-d3ee5680-a150-11eb-852c-f6f54aec7903.png">
+🧷 최종 모델 예측 그래프(**2009-01-01 ~ 2021-05-04**)<br>
+<img width="719" alt="graph" src="https://user-images.githubusercontent.com/54783194/117105567-47cb6880-adb9-11eb-9b79-47c4b1b14572.png">
 
 ## 📊 분석결과 보고서 작성
 - [Notion](https://www.notion.so/4f3cf41bc515438095b3a79be8bc5f9d)
