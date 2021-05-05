@@ -84,7 +84,7 @@
 - [Notion](https://www.notion.so/4f3cf41bc515438095b3a79be8bc5f9d)
 
 ## 📟 자동화
-- 예측하기 전 전일 우추리 축산 매출과 휴무 여부를 ``today_sale`` 변수와 ``remark_str``에 입력
+- 예측하기 전 전일 우추리 축산 매출과 휴무 여부를 ``today_sale`` 변수와 ``remark``에 입력
 - 예측하려는 날 오전 8시, 오전 11시에 2차례 ``main.py`` 수행
 - 유닉스 계열 Mac OS 시간 기반 잡 스케줄러 [cron](https://www.letmecompile.com/scheduler-cron-tutorial/) 이용
 - 예측값을 SMS로 전달하기 위해 소정의 유료 SMS 발송 플랫폼 [twiliow](https://www.twilio.com/) 활용
