@@ -19,7 +19,7 @@ crawling_prices.crawl_beef()  # Beef price
 crawling_prices.crawl_pork()  # Pork price
 
 # Insert today's sales of Woochuri store and store it in local DB
-today_sale = 645600  # 금일 매출 입력하기
+today_sale = 682100  # 금일 매출 입력하기
 remark_str = '평일'  # 금일 휴무 여부 입력하기!
 insert_sale = InsertSale()
 insert_sale.insert_sale(today_sale=today_sale, remark_str=remark_str)
@@ -41,3 +41,5 @@ client = Client(account_sid, auth_token)
 woochuri_master = '+821094125854'
 message = client.messages.create(from_='+13132543287', body=result, to=woochuri_master)
 print(message.sid)
+
+
