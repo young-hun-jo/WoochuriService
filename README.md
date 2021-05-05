@@ -72,7 +72,7 @@
 |LightGBM|22.19%|34.22%|
 |LightGBM(PCA로 차원축소 )|25.50%|37.70%|
 |Hybrid Voting(Random Forest+XGBoost+LightGBM)|20.20%|33.35%|
-|LSTM(with Convolution)|336,000|260,000|
+|LSTM(with Convolution)|37.31%|42.95%|
 
 💡 최종 모델 : **Random Forest Regressor**<br>
 💡 Optimal Hyper-parameter : ``n_estimators=100``, ``min_samples_split=2``<br>
