@@ -89,10 +89,9 @@
 - 유닉스 계열 Mac OS 시간 기반 잡 스케줄러 [cron](https://www.letmecompile.com/scheduler-cron-tutorial/) 이용
 - 예측값을 SMS로 전달하기 위해 소정의 유료 SMS 발송 플랫폼 [twiliow](https://www.twilio.com/) 활용
 ```python
-import pandas as pd
 from model import WoochuriPredModel
 from twilio.rest import Client
-
+import pandas as pd
 print('예측하려는 날짜:', pd.Timestamp.now())
 
 # Load updated crawling dataset and modeling to predict tomorrow's sale
