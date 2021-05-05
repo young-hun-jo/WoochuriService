@@ -1,41 +1,23 @@
-'''
- 무조건 예측날 아침에 돌려야 함!!
-'''
 import pandas as pd
-from datasets.weather import CrawlWeather
-from datasets.beef_pork import CrawlPrices
-from datasets.Woochuri_sales import InsertSale
 from model import WoochuriPredModel
 from twilio.rest import Client
 
-print(pd.Timestamp.now())
-# Crawling today's weather dataset in Public data API and store it in local DB
-crawling_weather = CrawlWeather()
-crawling_weather.crawl_weather()
-
-# Crawling today's beef, pork price dataset in Public data API and store it in local DB
-crawling_prices = CrawlPrices()
-crawling_prices.crawl_beef()  # Beef price
-crawling_prices.crawl_pork()  # Pork price
-
-# Insert today's sales of Woochuri store and store it in local DB
-today_sale = 682100  # 금일 매출 입력하기
-remark_str = '평일'  # 금일 휴무 여부 입력하기!
-insert_sale = InsertSale()
-insert_sale.insert_sale(today_sale=today_sale, remark_str=remark_str)
+print('예측하려는 날짜:', pd.Timestamp.now())
 
 # Load updated crawling dataset and modeling to predict tomorrow's sale
 # Setting parameters using local MySQL id, password
-user, password = 'root', 'watson1259@'
+user, password = 'root', 'your password'
 end_time = (pd.Timestamp.now() - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
 
-PredModel = WoochuriPredModel(user=user, password=password, end_time=end_time)
+# run crawling, preprocess datasets, and finally prediction at one time
+PredModel = WoochuriPredModel(user=user, password=password, end_time=end_time,
+                              today_sale=682100, remark='평일')
 FinalDataset = PredModel.execute()
 result = PredModel.run(FinalDataset)
 
-# # Sending Meassage
+# Sending message
 account_sid = 'AC8f9d9f4c8983ee648153f5347ee027a9'
-auth_token = 'your_auth_token' # your_auth_token 따로 적어놓기
+auth_token = 'your_auth_token'  # customize your_auth_token
 client = Client(account_sid, auth_token)
 
 woochuri_master = '+821094125854'

@@ -1,3 +1,6 @@
+from datasets.weather import CrawlWeather
+from datasets.beef_pork import CrawlPrices
+from datasets.Woochuri_sales import InsertSale
 import pymysql
 import numpy as np
 import pandas as pd
@@ -7,7 +10,6 @@ from sklearn.impute import KNNImputer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import RandomForestRegressor
 import warnings
-
 warnings.filterwarnings(action='ignore')
 
 
@@ -16,15 +18,36 @@ class WoochuriPredModel:
     Class including that crawl, preprocess data, modeling and finally prediction
     '''
 
-    def __init__(self, user, password, end_time):
+    def __init__(self, user, password, end_time, today_sale, remark):
+        """
+        Args:
+            - _user : local DB 'user_id'
+            - _password : local DB 'password'
+            - _end_time : today's datetime
+            - _remark : whether holiday or not
+        """
         self._user = user
         self._password = password
         self._end_time = end_time  # time that will be predicted
+        self._today_sale = today_sale
+        self._remark = remark
 
-    def load_beef_pork(self):
+    def _crawl_datasets(self):
         """
-        Function: load beef and pork dataset. And preprocess it.
+        Function: Crawling public datasets and insert today's sale into local DB
         """
+        CrawlWeather().crawl_weather()
+        CrawlPrices().crawl_beef()
+        CrawlPrices().crawl_pork()
+        InsertSale().insert_sale(today_sale=self._today_sale, remark_str=self._remark)
+
+    def _load_beef_pork(self):
+        """
+        Function: crawl and load beef and pork dataset. And preprocess it.
+        """
+        # Crawling all datasets
+        self._crawl_datasets()
+
         # connect local MySQL
         db = pymysql.connect(host='localhost', user=self._user,
                              password=self._password, db='beef_pork_db',
@@ -82,7 +105,7 @@ class WoochuriPredModel:
 
         return beef_pork_df
 
-    def load_weather(self):
+    def _load_weather(self):
         """
         Function: load weather dataset and preprocess it
         """
@@ -143,7 +166,7 @@ class WoochuriPredModel:
 
         return weather
 
-    def load_woochuri(self):
+    def _load_woochuri(self):
         """
         Function: load Woochuri daily sales and preprocess it
         """
@@ -215,7 +238,7 @@ class WoochuriPredModel:
 
         return holidays_data
 
-    def merge_datasets(self, beef_pork, weather, sales):
+    def _merge_datasets(self, beef_pork, weather, sales):
         """
         Function: Merge all datasets
         Args:
@@ -276,10 +299,10 @@ class WoochuriPredModel:
         """
         Function: After loading, preprocessing each dataset, merge all datasets into final dataset
         """
-        BeefPork = self.load_beef_pork()
-        Weather = self.load_weather()
-        Sales = self.load_woochuri()
-        FinalDataset = self.merge_datasets(BeefPork, Weather, Sales)
+        BeefPork = self._load_beef_pork()
+        Weather = self._load_weather()
+        Sales = self._load_woochuri()
+        FinalDataset = self._merge_datasets(BeefPork, Weather, Sales)
 
         return FinalDataset
 
