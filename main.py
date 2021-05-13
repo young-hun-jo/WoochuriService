@@ -11,7 +11,7 @@ end_time = (pd.Timestamp.now() - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
 
 # run crawling, preprocess datasets, and finally prediction at one time
 PredModel = WoochuriPredModel(user=user, password=password, end_time=end_time,
-                                  today_sale=0, remark='특이휴무')
+                                  today_sale=399800, remark='평')
 FinalDataset = PredModel.execute()
 result = PredModel.run(FinalDataset)
 
